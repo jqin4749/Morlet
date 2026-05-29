@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "morlet"
+version = "0.1.0"
+description = "Morlet Spectral Transformer (MST) — EEG emotion decoding on SEED-family benchmarks"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "numpy>=1.23",
+  "torch>=2.1",
+  "transformers>=4.38",
+  "accelerate>=0.28",
+  "diffusers>=0.25",
+  "scikit-learn>=1.3",
+  "scipy>=1.10",
+  "tqdm>=4.65",
+  "matplotlib>=3.7",
+  "safetensors>=0.4",
+  "wandb>=0.16",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.3"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["morlet*"]

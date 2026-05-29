@@ -1,0 +1,124 @@
+{
+  "project": {
+    "group_name": "mst_seed_subject_independent",
+    "working_dir": "./",
+    "seed": 42,
+    "wandb_project": "mst-downstream",
+    "wandb_key": null
+  },
+  "data": {
+    "dataset": "seed",
+    "normalize": "subject",
+    "subject_stats_dir": null,
+    "dataset_path": "/path/to/seed/preprocessed",
+    "splits_path": "/path/to/seed/preprocessed/splits_subject_independent.json",
+    "interval_length": 400,
+    "channel_last": true,
+    "num_workers": 10,
+    "cache_size": 10,
+    "padding": 0
+  },
+  "model": {
+    "name": "mst_downstream",
+    "pretrained_path": null,
+    "config": {
+      "downstream_output_dim": 3,
+      "n_freqs": 20,
+      "freq_low": 2.0,
+      "freq_high": 45.0,
+      "wavelet_cycles": 5.0,
+      "sfreq": 200.0,
+      "n_time_frames": 16,
+      "log_eps": 1e-6,
+      "n_channels": 62,
+      "spatial_dim": 16,
+      "embed_dim": 256,
+      "num_layers": 12,
+      "num_heads": 8,
+      "dropout": 0.05,
+      "mlp_ratio": 4.0,
+      "supcon_proj_dim": 256,
+      "supcon_tau": 0.1,
+      "use_supcon": false,
+      "supcon_weight": 0,
+      "num_datasets": 8,
+      "dataset_num_classes": [3, 4, 5, 7, 6, 0, 0, 0],
+      "vicreg_weight": 0.0,
+      "vicreg_lambda_inv": 25.0,
+      "vicreg_lambda_var": 25.0,
+      "vicreg_lambda_cov": 1.0,
+      "vicreg_var_gamma": 1.0,
+      "use_axial_attention": false,
+      "freq_baseline_n_segments": 5
+    }
+  },
+  "training": {
+    "task_type": "classification",
+    "is_binary": false,
+    "loss": "cross_entropy",
+    "metrics": [
+      "accuracy",
+      "balanced_accuracy",
+      "cohen_kappa",
+      "f1_weighted"
+    ],
+    "best_metric": "val_balanced_accuracy",
+    "batch_size": 128,
+    "val_batch_size": 128,
+    "learning_rate": 2e-4,
+    "optimizer": "adamw",
+    "weight_decay": 0.05,
+    "lr_scheduler": "cosine",
+    "lr_warmup_steps": 1000,
+    "max_train_steps": 50000,
+    "gradient_accumulation_steps": 1,
+    "max_grad_norm": 1.0,
+    "mixed_precision": "no",
+    "validation_steps": 200,
+    "save_every_steps": 1000,
+    "resume_from_checkpoint": null,
+    "freeze_backbone": false,
+    "trainable_modules": [],
+    "mst_augmentation": {
+      "enabled": true,
+      "channel_gain_log_std": 0.3,
+      "spectral_tilt_max_slope": 0.3,
+      "probs": {
+        "phase": 1,
+        "band_noise": 0.5,
+        "channel_dropout": 0.5,
+        "channel_gain": null,
+        "spectral_tilt": null,
+        "channel_drop_fraction": null
+      },
+      "intralabel_random_interpolation": {
+        "enable_intralabel_random_interpolation": false,
+        "intralabel_interp_prob": 0.5,
+        "intralabel_interp_alpha_min": 0.2,
+        "intralabel_interp_alpha_max": 0.8,
+        "intralabel_frequency_domain": true
+      },
+      "post_wavelet": {
+        "intralabel_interpolation": {
+          "enabled": false,
+          "apply_prob": 0.5,
+          "alpha_min": 0.2,
+          "alpha_max": 0.8
+        },
+        "time_roll": {
+          "enabled": true,
+          "apply_prob": 0.5
+        }
+      }
+    },
+    "latent_analysis": {
+      "enabled": false,
+      "max_samples": 512,
+      "label_names": {
+        "0": "Negative",
+        "1": "Neutral",
+        "2": "Positive"
+      }
+    }
+  }
+}

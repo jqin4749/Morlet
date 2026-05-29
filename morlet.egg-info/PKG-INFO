@@ -1,0 +1,88 @@
+Metadata-Version: 2.4
+Name: morlet
+Version: 0.1.0
+Summary: Morlet Spectral Transformer (MST) — EEG emotion decoding on SEED-family benchmarks
+License: Apache-2.0
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.23
+Requires-Dist: torch>=2.1
+Requires-Dist: transformers>=4.38
+Requires-Dist: accelerate>=0.28
+Requires-Dist: diffusers>=0.25
+Requires-Dist: scikit-learn>=1.3
+Requires-Dist: scipy>=1.10
+Requires-Dist: tqdm>=4.65
+Requires-Dist: matplotlib>=3.7
+Requires-Dist: safetensors>=0.4
+Requires-Dist: wandb>=0.16
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: ruff>=0.3; extra == "dev"
+
+# Morlet（MST）代码发布
+
+本目录包含论文 *Dive into Waves: Morlet Spectral Transformer for Cross-Subject Emotion Decoding from EEG* 中 **Morlet Spectral Transformer（MST）** 下游训练所需的最小代码：Morlet 小波前端、长上下文基线去除、按频带的空域投影、二维 RoPE Transformer，以及 **SEED / SEED-IV / SEED-V / SEED-VII** 数据加载与预处理脚本入口。
+
+原工程中的模型名 **`spectrum` 已全部重命名为 `MST` / `mst_downstream`**，便于与论文术语一致；与本发布无关的个人信息已从示例配置中移除，请将你本地的数据路径填入 JSON 配置。
+
+## 环境
+
+**方式 A：`conda`**
+
+```bash
+conda env create -f environment.yml
+conda activate morlet
+# 如需 GPU，请按 https://pytorch.org 安装与你 CUDA 版本匹配的 torch。
+```
+
+**方式 B：`venv` + pip**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -U pip
+pip install -r requirements.txt
+pip install -e .
+```
+
+## 数据
+
+按各 `seed*_preprocess.py` 中的说明将原始 SEED 家族数据转为目录化的 `eeg.npy`、`meta.json` 等，并生成 `splits*.json`。将配置文件中的 `dataset_path`、`splits_path` 指向你的预处理根目录。
+
+## 训练
+
+单机示例（需先设置 `WANDB_API_KEY` 若使用 Weights & Biases，或在配置中关闭相关日志）：
+
+```bash
+cd Morlet
+pip install -e .
+accelerate launch scripts/downstream.py --config configs/mst_seed_subject_independent.json
+```
+
+多 GPU 时仍使用 `accelerate launch` 与上游相同的 Accelerate 流程。
+
+## 配置说明
+
+- `model.name` 必须为 **`mst_downstream`**。
+- 长上下文基线：`model.config.freq_baseline_n_segments` 与数据侧一致时，数据集会提供 `eeg_history`；训练脚本通过 **`mst_augmentation`**（原 `spectrum_augmentation`）传入增广超参。
+- 示例配置：
+  - `configs/mst_seed_subject_independent.json` — SEED 被试独立划分
+  - `configs/mst_seedv_subject_dependent.json` — SEED-V
+  - `configs/mst_seedvii_subject_dependent.json` — SEED-VII
+
+## 代码结构
+
+```
+Morlet/
+  morlet/
+    models/mst.py       # MST 下游模型与 Morlet 前端
+    datasets/           # SEED 家族数据集与预处理入口
+    utils/              # 增广与训练辅助函数
+  scripts/downstream.py # 下游训练主脚本（自原 eegmodel/scripts/downstream.py 精简并更名）
+  configs/              # 示例 JSON
+```
+
+## 许可证
+
+发布包元数据默认标注为 Apache-2.0；若你与合著者有其他许可要求，请替换 `pyproject.toml` 中的 `license` 字段并以仓库根目录的 `LICENSE` 为准。

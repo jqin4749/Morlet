@@ -1,0 +1,22 @@
+# Conda environment for MST (Morlet) training.
+# Create: conda env create -f environment.yml
+# PyTorch with CUDA: after creating the env, install the matching torch build from
+# https://pytorch.org/get-started/locally/
+name: morlet
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10,<3.13
+  - pip
+  - numpy>=1.23
+  - scipy>=1.10
+  - scikit-learn>=1.3
+  - tqdm
+  - matplotlib
+  - pip:
+      - torch>=2.1
+      - transformers>=4.38
+      - accelerate>=0.28
+      - diffusers>=0.25
+      - safetensors>=0.4
+      - wandb>=0.16
