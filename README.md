@@ -191,6 +191,7 @@ If you use this code, please cite:
 @article{qing2026morlet,
   title={Dive into Waves: Morlet Spectral Transformer for Cross-Subject Emotion Decoding from EEG},
   author={Qing, Jiaxin and Li, Lexin},
+  journal={arXiv preprint arXiv:2606.00884}
   year={2026}
 }
 ```
